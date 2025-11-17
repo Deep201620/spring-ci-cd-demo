@@ -11,7 +11,6 @@ pipeline {
     // 💡 Add the global tools section back to use your Jenkins-managed Maven
         tools {
             maven 'M3_HOME' // M3_HOME must match the Name in your Jenkins configuration
-            jdk 'JDK_21'
         }
 
     // Note: The global 'tools' directive is removed as the tool is now defined per stage.
@@ -29,11 +28,8 @@ pipeline {
             steps {
                 script {
                     // 💡 ADDED: Use withEnv to set JAVA_HOME using the JDK_21 tool path
-                    withEnv(["JAVA_HOME=${tool('JDK_21')}"]) {
-                        echo "JAVA_HOME is set to: $JAVA_HOME" // Optional: for verification
-                        // Now run Maven, which relies on JAVA_HOME
+
                         sh 'mvn clean install'
-                    }
                 }
             }
         }

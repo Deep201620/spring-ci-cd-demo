@@ -1,6 +1,6 @@
 # 1. Build Stage: Use a slim JDK image to compile the Java code
 
-FROM eclipse-temurin:21-jdk-alpine AS build
+FROM eclipse-temurin:17-jdk-alpine AS build
 WORKDIR /app
 
 # Copy the Maven configuration and source code
@@ -14,7 +14,7 @@ RUN --mount=type=cache,target=/root/.m2 ./mvnw package -DskipTests
 
 # 2. Production Stage: Use a smaller JRE image for the final running container
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 # Set the user to 'nonroot' for better security
 
