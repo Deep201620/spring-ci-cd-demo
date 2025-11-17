@@ -4,7 +4,10 @@ FROM eclipse-temurin:17-jdk AS build
 WORKDIR /app
 
 # Copy the Maven configuration and source code
+# 💡 ADDED: Copy the Maven Wrapper files
 
+COPY mvnw .
+COPY .mvn ./.mvn
 COPY pom.xml .
 COPY src ./src
 
