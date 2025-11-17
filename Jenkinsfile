@@ -35,11 +35,19 @@ pipeline {
         }
 
         // 3. Docker Image Creation (Reverts to 'agent any' to access the host Docker daemon)
+// 3. Docker Image Creation (Uses a dedicated Docker-in-Docker-like setup)
         stage('Docker Build') {
-            agent any
+            // 💡 NEW AGENT BLOCK: Runs this stage inside a container with the Docker CLI
+            agent {
+                docker {
+                    image 'docker:latest' // Official image with Docker CLI
+                    // Mount the host Docker socket to enable 'docker build'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                }
+            }
             steps {
-                // This step relies on the Docker CLI being accessible via the host's Docker socket mount.
                 script {
+                    // This command is now running inside the 'docker:latest' container
                     sh 'docker build -t spring-ci-cd-demo:latest .'
                     echo "Docker image spring-ci-cd-demo:latest built successfully."
                 }
