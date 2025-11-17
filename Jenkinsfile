@@ -8,6 +8,11 @@ pipeline {
         timestamps() // Adds timestamps to the console output
     }
 
+    // 💡 Add the global tools section back to use your Jenkins-managed Maven
+        tools {
+            maven 'M3_HOME' // M3_HOME must match the Name in your Jenkins configuration
+        }
+
     // Note: The global 'tools' directive is removed as the tool is now defined per stage.
 
     stages {
@@ -22,13 +27,7 @@ pipeline {
         stage('Build and Test') {
             // Use an official Maven image as the agent for this stage.
             // This guarantees 'mvn' is available in the environment's PATH, fixing the "command not found" error.
-            agent {
-                docker {
-                    image 'maven:3.9.5-eclipse-temurin-21'
-                    // Optional: This volume mounts your local Maven repository into the container for faster, cached builds.
-                    args '-v $HOME/.m2:/root/.m2'
-                }
-            }
+
             steps {
                 // 'mvn' is now guaranteed to be found inside the Maven container
                 sh 'mvn clean install'
