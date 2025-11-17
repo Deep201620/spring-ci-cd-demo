@@ -68,7 +68,7 @@ pipeline {
                     sh '/usr/local/bin/docker run -d --name spring-demo-app -p 8088:8080 spring-ci-cd-demo:latest'
 
                     // Wait for the Spring Boot app to initialize
-                    sleep 10
+                    sleep 20
 
                     // Test the application endpoint using curl
                     echo "Testing application endpoint..."
