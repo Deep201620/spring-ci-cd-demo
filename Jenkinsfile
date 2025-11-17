@@ -42,7 +42,7 @@ pipeline {
                             // Prepend /usr/local/bin to the PATH before executing docker
                             withEnv(["PATH+DOCKER=/usr/local/bin:${env.PATH}"]) {
                                 // Use the generic 'docker' command now that the PATH is fixed
-                                sh 'docker build -t spring-ci-cd-demo:latest .'
+                                sh '/usr/local/bin/docker build --platform linux/arm64 -t spring-ci-cd-demo:latest .'
                                 echo "Docker image spring-ci-cd-demo:latest built successfully."
                             }
                         }
