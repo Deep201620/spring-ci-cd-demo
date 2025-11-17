@@ -36,15 +36,18 @@ pipeline {
 
         // 3. Docker Image Creation (Reverts to 'agent any' to access the host Docker daemon)
         stage('Docker Build') {
-            agent any
-            steps {
-                // This step relies on the Docker CLI being accessible via the host's Docker socket mount.
-                script {
-                    sh '/usr/local/bin/docker build -t spring-ci-cd-demo:latest .'
-                    echo "Docker image spring-ci-cd-demo:latest built successfully."
+                    agent any
+                    steps {
+                        script {
+                            // Prepend /usr/local/bin to the PATH before executing docker
+                            withEnv(["PATH+DOCKER=/usr/local/bin:${env.PATH}"]) {
+                                // Use the generic 'docker' command now that the PATH is fixed
+                                sh 'docker build -t spring-ci-cd-demo:latest .'
+                                echo "Docker image spring-ci-cd-demo:latest built successfully."
+                            }
+                        }
+                    }
                 }
-            }
-        }
 
         // 4. Local Run and Verification (Simulating Local Deployment)
         stage('Local Deployment Test') {
