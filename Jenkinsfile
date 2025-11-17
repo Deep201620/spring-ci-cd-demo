@@ -1,37 +1,45 @@
 pipeline {
-    // Defines where the pipeline will execute.
-    // 'any' uses any available Jenkins agent/executor.
-    // For production, you might specify a Docker image (e.g., 'docker { image "maven:3.9.5-eclipse-temurin-21" }')
+    // Defines the default agent for stages without a specific agent block.
+    // The Docker build stage will still use this agent, relying on the mounted Docker socket.
     agent any
 
     options {
-        // Keeps the build clean by deleting workspaces after the build is finished
-        // Note: For local development, this might slow down subsequent builds if caching is not used well.
         skipDefaultCheckout(false)
         timestamps() // Adds timestamps to the console output
     }
+
+    // Note: The global 'tools' directive is removed as the tool is now defined per stage.
 
     stages {
         // 1. Source Code Retrieval
         stage('Checkout Code') {
             steps {
-                // Assuming the repository is configured in Jenkins job SCM settings
                 checkout scm
             }
         }
 
-        // 2. Build and Unit Tests
+        // 2. Build and Unit Tests (Uses a dedicated Maven Docker Agent)
         stage('Build and Test') {
+            // Use an official Maven image as the agent for this stage.
+            // This guarantees 'mvn' is available in the environment's PATH, fixing the "command not found" error.
+            agent {
+                docker {
+                    image 'maven:3.9.5-eclipse-temurin-21'
+                    // Optional: This volume mounts your local Maven repository into the container for faster, cached builds.
+                    args '-v $HOME/.m2:/root/.m2'
+                }
+            }
             steps {
-                // Ensure Maven is available on the Jenkins agent or installed via Tool Configuration
+                // 'mvn' is now guaranteed to be found inside the Maven container
                 sh 'mvn clean install'
             }
         }
 
-        // 3. Docker Image Creation
+        // 3. Docker Image Creation (Reverts to 'agent any' to access the host Docker daemon)
         stage('Docker Build') {
+            agent any
             steps {
-                // Assuming Docker CLI is installed and accessible on the Jenkins agent
+                // This step relies on the Docker CLI being accessible via the host's Docker socket mount.
                 script {
                     sh 'docker build -t spring-ci-cd-demo:latest .'
                     echo "Docker image spring-ci-cd-demo:latest built successfully."
@@ -41,6 +49,7 @@ pipeline {
 
         // 4. Local Run and Verification (Simulating Local Deployment)
         stage('Local Deployment Test') {
+            agent any
             // Only runs if the previous stages succeeded
             when {
                 expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
@@ -61,6 +70,8 @@ pipeline {
 
                     // Test the application endpoint using curl
                     echo "Testing application endpoint..."
+                    // Note: If running this stage inside a container, 'localhost' might not work.
+                    // We are running on 'agent any', so 'localhost' should still refer to the host system.
                     def response = sh(returnStdout: true, script: 'curl -s http://localhost:8080/')
 
                     if (response.contains("Hello from Spring Boot")) {
