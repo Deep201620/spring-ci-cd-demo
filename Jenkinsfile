@@ -11,6 +11,7 @@ pipeline {
     // 💡 Add the global tools section back to use your Jenkins-managed Maven
         tools {
             maven 'M3_HOME' // M3_HOME must match the Name in your Jenkins configuration
+            jdk 'JDK_21'
         }
 
     // Note: The global 'tools' directive is removed as the tool is now defined per stage.
