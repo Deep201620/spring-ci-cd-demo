@@ -26,12 +26,15 @@ pipeline {
 
         // 2. Build and Unit Tests (Uses a dedicated Maven Docker Agent)
         stage('Build and Test') {
-            // Use an official Maven image as the agent for this stage.
-            // This guarantees 'mvn' is available in the environment's PATH, fixing the "command not found" error.
-
             steps {
-                // 'mvn' is now guaranteed to be found inside the Maven container
-                sh 'mvn clean install'
+                script {
+                    // 💡 ADDED: Use withEnv to set JAVA_HOME using the JDK_21 tool path
+                    withEnv(["JAVA_HOME=${tool('JDK_21')}"]) {
+                        echo "JAVA_HOME is set to: $JAVA_HOME" // Optional: for verification
+                        // Now run Maven, which relies on JAVA_HOME
+                        sh 'mvn clean install'
+                    }
+                }
             }
         }
 
