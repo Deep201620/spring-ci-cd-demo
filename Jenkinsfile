@@ -40,7 +40,7 @@ pipeline {
             steps {
                 // This step relies on the Docker CLI being accessible via the host's Docker socket mount.
                 script {
-                    sh 'docker build -t spring-ci-cd-demo:latest .'
+                    sh '/usr/local/bin/docker build -t spring-ci-cd-demo:latest .'
                     echo "Docker image spring-ci-cd-demo:latest built successfully."
                 }
             }
@@ -58,11 +58,11 @@ pipeline {
                     echo "Starting temporary container for testing..."
 
                     // Stop and remove any existing container instance with the same name
-                    sh 'docker stop spring-demo-app || true'
-                    sh 'docker rm spring-demo-app || true'
+                    sh '/usr/local/bin/docker stop spring-demo-app || true'
+                    sh '/usr/local/bin/docker rm spring-demo-app || true'
 
                     // Run the new container in detached mode
-                    sh 'docker run -d --name spring-demo-app -p 8080:8080 spring-ci-cd-demo:latest'
+                    sh '/usr/local/bin/docker run -d --name spring-demo-app -p 8080:8080 spring-ci-cd-demo:latest'
 
                     // Wait for the Spring Boot app to initialize
                     sleep 10
@@ -84,8 +84,8 @@ pipeline {
             post {
                 always {
                     echo "Cleaning up test container..."
-                    sh 'docker stop spring-demo-app'
-                    sh 'docker rm spring-demo-app'
+                    sh '/usr/local/bin/docker stop spring-demo-app'
+                    sh '/usr/local/bin/docker rm spring-demo-app'
                 }
             }
         }
