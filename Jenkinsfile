@@ -65,7 +65,7 @@ pipeline {
                     sh '/usr/local/bin/docker rm spring-demo-app || true'
 
                     // Run the new container in detached mode
-                    sh '/usr/local/bin/docker run -d --name spring-demo-app -p 8080:8080 spring-ci-cd-demo:latest'
+                    sh '/usr/local/bin/docker run -d --name spring-demo-app -p 8088:8080 spring-ci-cd-demo:latest'
 
                     // Wait for the Spring Boot app to initialize
                     sleep 10
@@ -74,7 +74,7 @@ pipeline {
                     echo "Testing application endpoint..."
                     // Note: If running this stage inside a container, 'localhost' might not work.
                     // We are running on 'agent any', so 'localhost' should still refer to the host system.
-                    def response = sh(returnStdout: true, script: 'curl -s http://localhost:8080/')
+                    def response = sh(returnStdout: true, script: 'curl -s http://localhost:8088/')
 
                     if (response.contains("Hello from Spring Boot")) {
                         echo "Deployment Test Passed: Application is running and responding correctly."
