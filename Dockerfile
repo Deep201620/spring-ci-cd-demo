@@ -18,7 +18,8 @@ FROM eclipse-temurin:17-jre
 
 # Set the user to 'nonroot' for better security
 
-RUN addgroup -S springboot && adduser -S springboot -G springboot
+# RUN addgroup -S springboot && adduser -S springboot -G springboot
+RUN addgroup -S springboot && adduser -S -G springboot springboot
 USER springboot
 
 # Expose the default Spring Boot port
