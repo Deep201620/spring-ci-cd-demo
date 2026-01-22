@@ -1,31 +1,27 @@
-# Github Actions
 
 name: Hello world
-# on:
-#   push:
-#     - main
-#   pull:
-#   branches:
-#     - main
-#   workflow_dispatch: 
+
 on:
   issues:
-    types: [opened]
+    types: [ opened ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
 
 jobs:
-    comment-with-api:
-        runs-on: ubuntu-latest
+  comment-with-api:
+    runs-on: ubuntu-latest
 
-        
-        steps:
-            - name: Create comment with API
-              run: |
-                gh api -X POST \
-                  https://api.github.com/repo/${ORGANIZATION}/${REPOSITORY}/issues/${ISSUE_NUMBER}/comments \
-                  -f body='Comment posted from API not from action'
-            env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              ORGANIZATIOn: ${{ github.event.organization.login }}
-              REPOSITORY: ${{ github.event.repository.name }}
-              ISSUE_NUMBER: ${{ gihub.event.issue.number }}
-              
+    steps:
+      - name: Create comment with API
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh api -X POST \
+            repos/${OWNER}/${REPO}/issues/${ISSUE_NUMBER}/comments \
+            -f body='Comment posted from API not from action'
