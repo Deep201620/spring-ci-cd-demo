@@ -1,13 +1,17 @@
 # Github Actions
 
 name: Hello world
+# on:
+#   push:
+#     - main
+#   pull:
+#   branches:
+#     - main
+#   workflow_dispatch: 
 on:
-  push:
-    - main
-  pull:
-  branches:
-    - main
-  workflow_dispatch: 
+  issues:
+    types: [opened]
+
 jobs:
     comment-with-api:
         runs-on: ubuntu-latest
